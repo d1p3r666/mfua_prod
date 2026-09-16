@@ -1,0 +1,31 @@
+name: Sync Teacher Repository
+on: schedule: - cron: "0 * * * *" workflow_dispatch:
+permissions: contents: write
+jobs: sync: runs-on: ubuntu-latest
+steps:
+  - name: Checkout
+    uses: actions/checkout@v4
+    with:
+      fetch-depth: 0
+
+  - name: Configure Git
+    run: |
+      git config user.name "GitHub Actions"
+      git config user.email "actions@github.com"
+
+  - name: Add teacher repository
+    run: |
+      git remote add teacher https://gitflic.ru/project/rurewa/mfua.git
+
+  - name: Fetch teacher repository
+    run: |
+      git fetch teacher main
+
+  - name: Sync main
+    run: |
+      git checkout main
+      git reset --hard teacher/main
+
+  - name: Push
+    run: |
+      git push origin main --force
